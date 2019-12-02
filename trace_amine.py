@@ -23,7 +23,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)  #接收传递来的信息
-    print("传递来的消息" + bodu)
+    print("传递来的消息" + body)
     app.logger.info("Request body: " + body)
 
     # handle webhook body
