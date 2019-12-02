@@ -18,13 +18,12 @@ handler = WebhookHandler('648c59363849c97a023fe40ea27fd04d')
 
 @app.route("/callback", methods=['POST'])
 def callback():
-    post_message = request.get_data()
-    print(post_message)
     # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers['X-Line-Signature']  获取header
 
     # get request body as text
-    body = request.get_data(as_text=True)
+    body = request.get_data(as_text=True)  #接收传递来的信息
+    print("传递来的消息" + bodu)
     app.logger.info("Request body: " + body)
 
     # handle webhook body
@@ -39,9 +38,16 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+    print("event.reply_token:", event.reply_token)
+    print("event.message.text:", event.message.text)
+    # line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text=event.message.text))
+    if event.message.text == "搜索图片":
+        line_bot_api.reply_message(
+            event.reply_token,
+        TextSendMessage(text="请发送图片")
+            )
 
 
 
