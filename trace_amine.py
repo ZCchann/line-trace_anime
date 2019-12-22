@@ -1,5 +1,4 @@
 from flask import Flask, request, abort
-
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -7,7 +6,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, MessageImagemapAction ,ImageSendMessage ,ImageMessage
 )
 
 app = Flask(__name__)
@@ -20,7 +19,8 @@ handler = WebhookHandler('648c59363849c97a023fe40ea27fd04d')
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']  #获取header
-
+    print("header是 " + signature)
+    print("header是 " + signature)
     # get request body as text
     body = request.get_data(as_text=True)  #接收传递来的信息
     print("传递来的消息" + body)
@@ -35,21 +35,13 @@ def callback():
 
     return 'OK'
 
-
-@handler.add(MessageEvent, message=TextMessage)
+@handler.add(MessageEvent, message=ImageSendMessage)
 def handle_message(event):
-    print("event.reply_token:", event.reply_token)
-    print("event.message.text:", event.message.text)
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text=event.message.text))
-    if event.message.text == "搜索图片":
+    if event.message.ImageSendMessage:
         line_bot_api.reply_message(
             event.reply_token,
         TextSendMessage(text="请发送图片")
             )
 
-
-
 if __name__ == "__main__":
-    app.run()
+    app.run(port='5000')
