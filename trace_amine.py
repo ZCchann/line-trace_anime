@@ -2,9 +2,13 @@ from flask import Flask, request
 from linebot import LineBotApi
 import json
 import requests
+import logging
+
+#设置日志
+logging.basicConfig(filename="./trace.log",format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 #读取json文件内的参数
-set = open("seting.json",encoding='utf-8')
+set = open("config.json",encoding='utf-8')
 seting = json.load(set)
 line_bot = seting["line_bot_Channel_access_token"]
 saucenao_key = seting["saucenao_api_key"]
@@ -29,7 +33,7 @@ def callback():
         image_id = i["events"][0]["message"]["id"]
 
         message_content = line_bot_api.get_message_content(image_id) #从line服务器下载图片到本地服务器
-        with open("/data/images"+ image_id + ".jpg", 'wb') as fd:
+        with open("/data/images/"+ image_id + ".jpg", 'wb') as fd:
             for chunk in message_content.iter_content():
                 fd.write(chunk)
 
@@ -81,4 +85,4 @@ def callback():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port='5000')
