@@ -1,13 +1,6 @@
 from flask import Flask, request, abort
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, MessageImagemapAction ,ImageSendMessage ,ImageMessage
-)
+import json
+import requests
 
 app = Flask(__name__)
 
@@ -20,28 +13,21 @@ def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']  #获取header
     print("header是 " + signature)
-    print("header是 " + signature)
     # get request body as text
     body = request.get_data(as_text=True)  #接收传递来的信息
-    print("传递来的消息" + body)
-    app.logger.info("Request body: " + body)
-
-    # handle webhook body
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        print("Invalid signature. Please check your channel access token/channel secret.")
-        abort(400)
-
-    return 'OK'
-
-@handler.add(MessageEvent, message=ImageSendMessage)
-def handle_message(event):
-    if event.message.ImageSendMessage:
-        line_bot_api.reply_message(
-            event.reply_token,
-        TextSendMessage(text="请发送图片")
-            )
+    if body["message"]["type"] == "image":
+        reply_url = "https://api.line.me/v2/bot/message/reply"
+        reply = body["replyToken"]
+        huifu = {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+"{"+line_bot_api+"}",
+            "replyToken":reply,
+            "messages":[{
+                "type": "text",
+                "text":"123456"
+            }]
+        }
+        return json.dumps(huifu)
 
 if __name__ == "__main__":
     app.run(port='5000')
