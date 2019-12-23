@@ -42,6 +42,14 @@ https://youdomain.com/callback
 
 若需要更改callback 请修改脚本第26行
 
+### https设置
+
+因line bot的webhook需要https 单独购买证书价格不划算 推荐使用cloudflare的免费ssl代理来达到效果
+
+具体步骤可以参考以下文章
+
+ https://www.jianshu.com/p/24d3800f597a 
+
 ### 部署步骤
 
 1.请先查看本机python版本 若为python2请先安装python3并且设置环境变量
