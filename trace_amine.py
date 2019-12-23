@@ -1,38 +1,43 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from linebot import LineBotApi
 import json
 import requests
 
+#读取json文件内的参数
+set = open("seting.json",encoding='utf-8')
+seting = json.load(set)
+line_bot = seting["line_bot_Channel_access_token"]
+saucenao_key = seting["saucenao_api_key"]
+line_bot_hannel = seting["line_bot_Channel_secret"]
+domain = seting["server_domain"]
+
 app = Flask(__name__)
 
-line_bot_api = LineBotApi('SWQQkQbKu6C9n2L+a5A8sYEQqVdye8AyMqp3ONESJep23DRDC8tvb/28opljLgrROChzq7IX04xPpC07OG5vTc46B9+w2orifRVma144fnVZ6bZkoG2PmEEcn0+rEJQGLXXAsgacLxBHrs4XXuOdWgdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi(line_bot)
+line_bot_token = line_bot
+handler = line_bot_hannel
 
-line_bot_token = 'SWQQkQbKu6C9n2L+a5A8sYEQqVdye8AyMqp3ONESJep23DRDC8tvb/28opljLgrROChzq7IX04xPpC07OG5vTc46B9+w2orifRVma144fnVZ6bZkoG2PmEEcn0+rEJQGLXXAsgacLxBHrs4XXuOdWgdB04t89/1O/w1cDnyilFU='
-handler = '648c59363849c97a023fe40ea27fd04d'
-
-search_image_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key=91835487587906f735bad34ebe8e9519ec7ef72e&url='
+saucenao_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key='
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']  # 获取header
-    # get request body as text
     body = request.get_data()  # 接收传递来的信息
     i = eval(body)
 
     if i["events"][0]["message"]["type"] == "image":
         image_id = i["events"][0]["message"]["id"]
-        message_content = line_bot_api.get_message_content(image_id)
-        with open("/"+ image_id + ".jpg", 'wb') as fd:
+
+        message_content = line_bot_api.get_message_content(image_id) #从line服务器下载图片到本地服务器
+        with open("/data/images"+ image_id + ".jpg", 'wb') as fd:
             for chunk in message_content.iter_content():
                 fd.write(chunk)
 
-        images_url = "https://zcchann.top/" + image_id + ".jpg"
+        images_url = domain + image_id + ".jpg"
+        search_image_url = saucenao_url + saucenao_key + "&url="
         response = requests.get(url=search_image_url+images_url)  # 获取trace.moe的返回信息
         response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
         result = response.json()  # 转换成json格式
-        print(type(result))
-
-
         similarity = result['results'][0]['header']['similarity']  # 相似度
         try:
             jp_name = result['results'][0]['data']['jp_name']
@@ -76,4 +81,4 @@ def callback():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
