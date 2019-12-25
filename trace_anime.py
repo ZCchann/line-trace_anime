@@ -3,6 +3,9 @@ from linebot import LineBotApi
 import json
 import requests
 import logging
+import base64
+import hashlib
+import hmac
 
 #设置日志
 logging.basicConfig(filename="./trace.log",format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -24,10 +27,19 @@ handler = line_bot_hannel
 saucenao_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key='
 @app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']  # 获取header
-    body = request.get_data()  # 接收传递来的信息
+    body = request.get_data(as_text=True)  # 接收传递来的信息
+    channel_secret = line_bot_hannel  # Channel secret string
+    hash = hmac.new(channel_secret.encode('utf-8'),
+                    body.encode('utf-8'), hashlib.sha256).digest()
+    signature = base64.b64encode(hash)
     i = eval(body)
+
+    reply_url = "https://api.line.me/v2/bot/message/reply"
+    reply = i["events"][0]["replyToken"]
+    header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + "{" + line_bot_token + "}",
+    }
 
     if i["events"][0]["message"]["type"] == "image":
         image_id = i["events"][0]["message"]["id"]
@@ -42,42 +54,41 @@ def callback():
         response = requests.get(url=search_image_url+images_url)  # 获取trace.moe的返回信息
         response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
         result = response.json()  # 转换成json格式
-        similarity = result['results'][0]['header']['similarity']  # 相似度
         try:
-            jp_name = result['results'][0]['data']['jp_name']
-        except KeyError:
-            jp_name = ""
-        try:
-            ext_urls = result['results'][0]['data']['ext_urls'][0]
-        except KeyError:
-            ext_urls = ""
-        try:
-            pixiv_id = int(result['results'][0]['data']['pixiv_id'])
-        except KeyError:
-            pixiv_id = ""
-        try:
-            member_name = result['results'][0]['data']['member_name']
-        except KeyError:
-            member_name = ""
-        try:
-            title = result['results'][0]['data']['title']
-        except KeyError:
-            title = ""
-        reply_url = "https://api.line.me/v2/bot/message/reply"
-        reply = i["events"][0]["replyToken"]
-        header = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + "{" + line_bot_token + "}",
-        }
+            status = result["header"]["status"]
+        except:
+            status = 1
+        if status < 1:
+            vaule = "今日机器人搜索次数已达上限 请于24小时后再进行搜索"
+        else:
+            similarity = result['results'][0]['header']['similarity']  # 相似度
+            try:
+                jp_name = result['results'][0]['data']['jp_name']
+            except KeyError:
+                jp_name = ""
+            try:
+                ext_urls = result['results'][0]['data']['ext_urls'][0]
+            except KeyError:
+                ext_urls = ""
+            try:
+                pixiv_id = int(result['results'][0]['data']['pixiv_id'])
+            except KeyError:
+                pixiv_id = ""
+            try:
+                member_name = result['results'][0]['data']['member_name']
+            except KeyError:
+                member_name = ""
+            try:
+                title = result['results'][0]['data']['title']
+            except KeyError:
+                title = ""
+            vaule = "相似度 " + str(similarity) + '%' + '\n' + "作者名称 " + str(member_name) + '\n' + "图片名称 " + str(title) + '' + jp_name + '\n' + "P站id " + str(pixiv_id) + '\n' + "图片链接 " + '\n' + ext_urls
+
         huifu = {
             "replyToken": reply,
             "messages": [{
                 "type": "text",
-                "text": "相似度 " + str(similarity) + '%' + '\n' +
-                                   "作者名称 " + str(member_name) + '\n' +
-                                   "图片名称 " + str(title) + '' + jp_name + '\n' +
-                                   "P站id " + str(pixiv_id) + '\n' +
-                                   "图片链接 " + '\n' + ext_urls
+                "text": vaule
             }]
         }
         requests.post(url=reply_url, data=json.dumps(huifu), headers=header)
