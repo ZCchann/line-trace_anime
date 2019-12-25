@@ -23,8 +23,10 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(line_bot)
 line_bot_token = line_bot
 handler = line_bot_hannel
-
 saucenao_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key='
+
+status = 150
+
 @app.route("/callback", methods=['POST'])
 def callback():
     body = request.get_data(as_text=True)  # 接收传递来的信息
@@ -92,8 +94,8 @@ def callback():
             }]
         }
         requests.post(url=reply_url, data=json.dumps(huifu), headers=header)
-        return json.dumps(huifu)
 
+    return 'OK'
 
 if __name__ == "__main__":
     app.run(port='5000')
