@@ -1,17 +1,13 @@
-from trace_anime import number
-
-def sousuo(image_url):
+import requests
+import json
+def sousuo(image_url,number):
     response = requests.get(url=image_url)  # 获取trace.moe的返回信息
     response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
     result = response.json()  # 转换成json格式
-    try:
-        status = result["header"]["status"]
-    except:
-        status = 1
 
-    if status < 1:
+    if result["header"]["status"] == -2:
         vaule = "今日机器人搜索次数已达上限 请于24小时后再进行搜索"
-    else:
+    elif result["header"]["status"] != -2:
         similarity = result['results'][0]['header']['similarity']  # 相似度
         try:
             jp_name = result['results'][0]['data']['jp_name']
@@ -43,4 +39,4 @@ def sousuo(image_url):
         }]
     }
     return huifu
-    # requests.post(url=reply_url, data=json.dumps(huifu), headers=header)
+
