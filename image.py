@@ -1,6 +1,6 @@
 import requests
 import json
-def sousuo(image_url,number):
+def sousuo(image_url,number,reply):
     response = requests.get(url=image_url)  # 获取trace.moe的返回信息
     response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
     result = response.json()  # 转换成json格式
