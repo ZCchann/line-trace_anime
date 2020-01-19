@@ -1,6 +1,6 @@
 import requests
 import json
-def sousuo(image_url,number,reply):
+def tra_image(reply_Token,image_url,number):
     response = requests.get(url=image_url)  # 获取trace.moe的返回信息
     response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
     result = response.json()  # 转换成json格式
@@ -32,11 +32,11 @@ def sousuo(image_url,number,reply):
         vaule = "相似度 " + str(similarity) + '%' + '\n' + "作者名称 " + str(member_name) + '\n' + "图片名称 " + str(
             title) + '' + jp_name + '\n' + "P站id " + str(pixiv_id) + '\n' + "图片链接 " + '\n' + ext_urls
     huifu = {
-        "replyToken": reply,
+        "replyToken": reply_Token,
         "messages": [{
             "type": "text",
             "text": vaule + '\n' + "本日机器人搜索剩余次数" + str(number[0])
         }]
     }
-    return huifu
+    return json.dumps(huifu)
 
