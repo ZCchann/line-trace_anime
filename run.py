@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 from flask import Flask, request
 from linebot import LineBotApi
-from image import tra_image
+from image import *
 from reply_message import *
-from bangumi import tra_bangumi
-from number import remaining_number
+from bangumi import *
+from number import *
+from pixiv import *
 import json
 import requests
 import logging
@@ -66,6 +67,8 @@ def callback():
                 bangumi_userid_list.append(push_userid)
         if push_text == "查询次数":
             requests.post(url=reply_url, data=remaining_number(reply,image_number,bangumi_number), headers=header)
+        if push_text == "今日排行":
+            requests.post(url=reply_url, data=download_day_illust(reply), headers=header)
     elif push_type == "image":
         image_id = i["events"][0]["message"]["id"]
         if push_userid in image_userid_list:
