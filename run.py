@@ -56,12 +56,12 @@ def callback():
     except KeyError:
         push_text = ""
     push_userid = i["events"][0]["source"]["userId"] #line推送过来的用户id
-    if push_type == "text" :
+    if push_type == "text":
         if push_text == "搜索图片":
             requests.post(url=reply_url, data=reply_message(reply), headers=header)
             if push_userid not in image_userid_list:
                 image_userid_list.append(push_userid)
-        if push_text == "识别番剧截图" :
+        if push_text == "识别番剧截图":
             requests.post(url=reply_url, data=reply_message(reply), headers=header)
             if push_userid not in bangumi_userid_list:
                 bangumi_userid_list.append(push_userid)

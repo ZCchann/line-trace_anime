@@ -8,7 +8,10 @@ def tra_image(reply_Token,image_url,number):
     if result["header"]["status"] == -2:
         vaule = "今日机器人搜索次数已达上限 请于24小时后再进行搜索"
     elif result["header"]["status"] != -2:
-        similarity = result['results'][0]['header']['similarity']  # 相似度
+        try:
+            similarity = result['results'][0]['header']['similarity']  # 相似度
+        except KeyError:
+            similarity = ""
         try:
             jp_name = result['results'][0]['data']['jp_name']
         except KeyError:
