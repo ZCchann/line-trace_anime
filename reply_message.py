@@ -5,7 +5,7 @@ def reply_message(replyToken):
         "replyToken": replyToken,
         "messages": [{
             "type": "text",
-            "text": "请发送图片",
+            "text": "请发送完整图片，屏幕截图、部分截图等有黑边或非图片信息资讯的内容会造成搜索结果有误",
             "quickReply": {    #quickReply模块 调用line相簿
                 "items": [
                     {
