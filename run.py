@@ -103,4 +103,4 @@ def callback():
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
     return 'OK'
 if __name__ == "__main__":
-    app.run(port='5000')
+    app.run(host='0.0.0.0',port='5000')
