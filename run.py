@@ -35,7 +35,8 @@ image_number = [190]  # saucenao每日搜索上限 默认上限为200 除非你�
 bangumi_number = [150]
 image_userid_list = []  # 存放"搜索图片"用户id
 bangumi_userid_list = []  # 存放"识别番剧"用户ID
-
+trace_image_text = ["搜索图片", "搜索圖片"]
+trace_bangumi_text = ["识别番剧截图", "識別番劇圖片"]
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -56,11 +57,11 @@ def callback():
     except KeyError:
         push_text = ""
     push_userid = i["events"][0]["source"]["userId"]  # line推送过来的用户id
-    if push_type == "text" and push_text == "搜索图片":
+    if push_type == "text" and push_text in trace_image_text:
         requests.post(url=reply_url, data=reply_message(reply), headers=header)
         if push_userid not in image_userid_list:
             image_userid_list.append(push_userid)
-    elif push_type == "text" and push_text == "识别番剧截图":
+    elif push_type == "text" and push_text in trace_bangumi_text:
         requests.post(url=reply_url, data=reply_message(reply), headers=header)
         if push_userid not in bangumi_userid_list:
             bangumi_userid_list.append(push_userid)
