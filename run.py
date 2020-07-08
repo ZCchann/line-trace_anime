@@ -14,8 +14,7 @@ import base64
 import hashlib
 import hmac
 
-# 设置日志
-
+executor = ThreadPoolExecutor(1)  # 设置异步线程1
 # 读取json文件内的参数
 seting = json.load(open("config.json", encoding='utf-8'))
 line_bot = seting["line_bot_Channel_access_token"]
@@ -37,7 +36,7 @@ image_userid_list = []  # 存放"搜索图片"用户id
 bangumi_userid_list = []  # 存放"识别番剧"用户ID
 trace_image_text = ["搜索图片", "搜索圖片"]
 trace_bangumi_text = ["识别番剧截图", "識別番劇圖片"]
-executor = ThreadPoolExecutor(1)  # 设置异步线程1
+time = ""
 
 
 @app.route("/callback", methods=['POST'])
