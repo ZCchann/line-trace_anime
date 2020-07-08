@@ -6,15 +6,15 @@ from reply_message import *
 from bangumi import *
 from number import *
 from pixiv import *
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 import json
 import requests
-import logging
 import base64
 import hashlib
 import hmac
 
 # 设置日志
-logging.basicConfig(filename="var/app.log", format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # 读取json文件内的参数
 seting = json.load(open("config.json", encoding='utf-8'))
@@ -37,9 +37,12 @@ image_userid_list = []  # 存放"搜索图片"用户id
 bangumi_userid_list = []  # 存放"识别番剧"用户ID
 trace_image_text = ["搜索图片", "搜索圖片"]
 trace_bangumi_text = ["识别番剧截图", "識別番劇圖片"]
+executor = ThreadPoolExecutor(1)  # 设置异步线程1
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
+    executor.submit(reset_number)
     body = request.get_data(as_text=True)  # 接收传递来的信息
     channel_secret = line_bot_hannel  # Channel secret string
     hash = hmac.new(channel_secret.encode('utf-8'),
@@ -102,6 +105,19 @@ def callback():
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
     return 'OK'
+
+
+def reset_number():
+    global time
+    nowtime = datetime.now().strftime("%Y-%m-%d")
+    if nowtime == time:
+        pass
+    else:
+        image_number.clear()
+        bangumi_number.clear()
+        image_number.append(190)
+        bangumi_number.append(150)
+        time = nowtime
 
 
 if __name__ == "__main__":
