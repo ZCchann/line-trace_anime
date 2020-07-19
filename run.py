@@ -92,7 +92,8 @@ def callback():
                 image_number.clear()
                 image_number.append(c)
                 image_userid_list.remove(push_userid)
-                requests.post(url=reply_url, data=tra_image(reply, download_image(image_id), image_number),
+                search_image_url = saucenao_url + saucenao_key + "&url=" + download_image(image_id)
+                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number),
                               headers=header)
             elif image_number[0] == 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -102,7 +103,8 @@ def callback():
                 bangumi_number.clear()
                 bangumi_number.append(c)
                 bangumi_userid_list.remove(push_userid)
-                requests.post(url=reply_url, data=tra_bangumi(reply, download_image(image_id), image_number),
+                trace_url = trace_moe_url + download_image(image_id)
+                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -112,7 +114,8 @@ def callback():
                 image_number.clear()
                 image_number.append(c)
                 group_image_userid_list.remove(push_userid)
-                requests.post(url=reply_url, data=tra_image(reply, download_image(image_id), image_number),
+                search_image_url = saucenao_url + saucenao_key + "&url=" + download_image(image_id)
+                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -122,7 +125,8 @@ def callback():
                 bangumi_number.clear()
                 bangumi_number.append(c)
                 group_bangumi_userid_list.remove(push_userid)
-                requests.post(url=reply_url, data=tra_bangumi(reply, download_image(image_id), image_number),
+                trace_url = trace_moe_url + download_image(image_id)
+                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -148,8 +152,7 @@ def download_image(image_id):
         for chunk in message_content.iter_content():
             fd.write(chunk)
     images_url = domain + image_id + ".jpg"
-    search_image_url = saucenao_url + saucenao_key + "&url=" + images_url
-    return search_image_url
+    return images_url
 
 
 if __name__ == "__main__":
