@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import io
+import os
 from flask import Flask, request
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
@@ -17,9 +18,13 @@ from datetime import datetime
 
 executor = ThreadPoolExecutor(1)  # 设置异步线程1
 
-line_bot = config.line_bot_Channel_access_token
-saucenao_key = config.saucenao_api_key
-line_bot_hannel = config.line_bot_Channel_secret
+line_bot = os.environ["line_bot_Channel_access_token"]
+line_bot_hannel = os.environ["line_bot_Channel_secret"]
+saucenao_key = os.environ["saucenao_api_key"]
+
+# line_bot = config.line_bot_Channel_access_token
+# saucenao_key = config.saucenao_api_key
+# line_bot_hannel = config.line_bot_Channel_secret
 
 app = Flask(__name__)
 
