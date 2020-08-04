@@ -18,8 +18,8 @@ from datetime import datetime
 
 executor = ThreadPoolExecutor(1)  # 设置异步线程1
 
-line_bot = os.environ["line_bot_Channel_access_token"]
-line_bot_hannel = os.environ["line_bot_Channel_secret"]
+line_bot_token = os.environ["line_bot_Channel_access_token"]
+line_bot_secret = os.environ["line_bot_Channel_secret"]
 saucenao_key = os.environ["saucenao_api_key"]
 
 # line_bot = config.line_bot_Channel_access_token
@@ -28,9 +28,8 @@ saucenao_key = os.environ["saucenao_api_key"]
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi(line_bot)
-line_bot_token = line_bot
-handler = line_bot_hannel
+line_bot_api = LineBotApi(line_bot_token)
+handler = line_bot_secret
 reply_url = "https://api.line.me/v2/bot/message/reply"  # line bot replyAPI地址
 saucenao_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key='  # saucenaoAPI地址
 trace_moe_url = 'https://trace.moe/api/search?url='  # trace.moe的api地址
@@ -48,8 +47,7 @@ time = ""
 def callback():
     executor.submit(reset_number)
     body = request.get_data(as_text=True)  # 接收传递来的信息
-    channel_secret = line_bot_hannel  # Channel secret string
-    hash = hmac.new(channel_secret.encode('utf-8'),
+    hash = hmac.new(line_bot_secret.encode('utf-8'),
                     body.encode('utf-8'), hashlib.sha256).digest()
     signature = base64.b64encode(hash)
     i = eval(body)
