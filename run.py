@@ -1,6 +1,12 @@
 #!/usr/bin/python3
+import config
+import base64
+import hashlib
+import hmac
+import io
 from flask import Flask, request
 from linebot import LineBotApi
+from linebot.models import TextSendMessage
 from image import *
 from reply_message import *
 from bangumi import *
@@ -8,18 +14,12 @@ from number import *
 from pixiv import *
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-import config
-import requests
-import base64
-import hashlib
-import hmac
 
 executor = ThreadPoolExecutor(1)  # 设置异步线程1
 
 line_bot = config.line_bot_Channel_access_token
 saucenao_key = config.saucenao_api_key
 line_bot_hannel = config.line_bot_Channel_secret
-domain = config.server_domain
 
 app = Flask(__name__)
 
@@ -38,7 +38,6 @@ group_bangumi_userid_list = []  # 存放群组类型"识别番剧"用户ID
 trace_image_text = ["搜索图片", "搜索圖片"]
 trace_bangumi_text = ["识别番剧截图", "識別番劇圖片"]
 time = ""
-
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -62,6 +61,7 @@ def callback():
         push_text = i["events"][0]["message"]["text"]  # line推送过来的类型为文本
     except KeyError:
         push_text = ""
+
     # 用户推送命令
     if push_type == "text" and push_text in trace_image_text and message_type == "user":  # 私聊 搜索图片
         requests.post(url=reply_url, data=reply_message(reply), headers=header)
@@ -92,8 +92,10 @@ def callback():
                 image_number.clear()
                 image_number.append(c)
                 image_userid_list.remove(push_userid)
-                search_image_url = saucenao_url + saucenao_key + "&url=" + download_image(image_id)
-                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number),
+                img = download_image(image_id)
+                files = {'file': ("image.png", img.getvalue())}
+                search_image_url = saucenao_url + saucenao_key
+                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number, files),
                               headers=header)
             elif image_number[0] == 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -103,8 +105,10 @@ def callback():
                 bangumi_number.clear()
                 bangumi_number.append(c)
                 bangumi_userid_list.remove(push_userid)
-                trace_url = trace_moe_url + download_image(image_id)
-                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number),
+                img = download_image(image_id)
+                files = {'image': ("image.png", img.getvalue())}
+                trace_url = trace_moe_url
+                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number, files),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -114,8 +118,10 @@ def callback():
                 image_number.clear()
                 image_number.append(c)
                 group_image_userid_list.remove(push_userid)
-                search_image_url = saucenao_url + saucenao_key + "&url=" + download_image(image_id)
-                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number),
+                img = download_image(image_id)
+                files = {'image': ("image.png", img.getvalue())}
+                search_image_url = saucenao_url + saucenao_key
+                requests.post(url=reply_url, data=tra_image(reply, search_image_url, image_number, files),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -125,8 +131,10 @@ def callback():
                 bangumi_number.clear()
                 bangumi_number.append(c)
                 group_bangumi_userid_list.remove(push_userid)
-                trace_url = trace_moe_url + download_image(image_id)
-                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number),
+                img = download_image(image_id)
+                files = {'file': ("image.png", img.getvalue())}
+                trace_url = trace_moe_url
+                requests.post(url=reply_url, data=tra_bangumi(reply, trace_url, bangumi_number, files),
                               headers=header)
             elif bangumi_number[0] > 0:
                 requests.post(url=reply_url, data=error_message(reply), headers=header)
@@ -147,12 +155,12 @@ def reset_number():
 
 
 def download_image(image_id):
+    print(image_id)
     message_content = line_bot_api.get_message_content(image_id)  # 从line服务器下载图片到本地服务器
-    with open("/data/images/" + image_id + ".jpg", 'wb') as fd:
-        for chunk in message_content.iter_content():
-            fd.write(chunk)
-    images_url = domain + image_id + ".jpg"
-    return images_url
+    img = io.BytesIO()
+    for chunk in message_content.iter_content():
+        img.write(chunk)
+    return img
 
 
 if __name__ == "__main__":

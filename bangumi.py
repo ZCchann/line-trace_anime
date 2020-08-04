@@ -1,10 +1,11 @@
 import requests
 import json
 
-def tra_bangumi(reply_Token,trace_url,image_remaining_number):
-    response = requests.get(trace_url)  # 获取trace.moe的返回信息
+def tra_bangumi(reply_Token, trace_url, image_remaining_number, files):
+    response = requests.post(trace_url, files=files)  # 获取trace.moe的返回信息
     response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
     result = response.json()  # 转换成dict格式
+    js = json.dumps(result, sort_keys=True, indent=4, separators=(',', ':'))
     animename = result["docs"][0]["title_chinese"]  # 切片番剧名称
     similarity = result["docs"][0]["similarity"]  # 切片相似度
     time = result["docs"][0]["at"]  # 切片时间

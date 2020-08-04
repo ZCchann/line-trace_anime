@@ -1,10 +1,9 @@
 import requests
 import json
-def tra_image(reply_Token,image_url,number):
-    response = requests.get(url=image_url)  # 获取trace.moe的返回信息
+def tra_image(reply_Token, image_url, number, files):
+    response = requests.post(url=image_url, files=files)  # 获取trace.moe的返回信息
     response.encoding = 'utf-8'  # 把trace.moe的返回信息转码成utf-8
     result = response.json()  # 转换成json格式
-
     if result["header"]["status"] == -2:
         vaule = "今日机器人搜索次数已达上限 请于24小时后再进行搜索"
     elif result["header"]["status"] != -2:
