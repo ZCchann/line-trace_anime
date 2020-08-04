@@ -43,6 +43,10 @@ trace_image_text = ["搜索图片", "搜索圖片"]
 trace_bangumi_text = ["识别番剧截图", "識別番劇圖片"]
 time = ""
 
+@app.route("/")
+def test():
+    return "Hello"
+
 @app.route("/callback", methods=['POST'])
 def callback():
     executor.submit(reset_number)
