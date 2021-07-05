@@ -29,7 +29,7 @@ line_bot_token = line_bot
 handler = line_bot_hannel
 reply_url = "https://api.line.me/v2/bot/message/reply"  # line bot replyAPI地址
 saucenao_url = 'https://saucenao.com/search.php?db=999&output_type=2&testmode=1&numres=16&api_key='  # saucenaoAPI地址
-trace_moe_url = 'https://trace.moe/api/search?url='  # trace.moe的api地址
+trace_moe_url = 'https://api.trace.moe/search?anilistInfo&url='  # trace.moe的api地址
 image_number = [190]  # saucenao每日搜索上限 默认上限为200 除非你有氪金 建议设置200以内
 bangumi_number = [150]
 image_userid_list = []  # 存放"搜索图片"用户id
