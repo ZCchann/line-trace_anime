@@ -5,7 +5,7 @@ from image import *
 from reply_message import *
 from bangumi import *
 from number import *
-from pixiv import *
+# from pixiv import *
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import json
@@ -69,8 +69,8 @@ def callback():
             bangumi_userid_list.append(push_userid)
     elif push_type == "text" and push_text == "查询次数":
         requests.post(url=reply_url, data=remaining_number(reply, image_number, bangumi_number), headers=header)
-    elif push_type == "text" and push_text == "今日排行":
-        requests.post(url=reply_url, data=download_day_illust(reply), headers=header)
+    # elif push_type == "text" and push_text == "今日排行":
+    #     requests.post(url=reply_url, data=download_day_illust(reply), headers=header)
     elif push_type == "image":
         image_id = i["events"][0]["message"]["id"]
         if push_userid in image_userid_list:
